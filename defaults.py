@@ -1,6 +1,9 @@
+FLORIDA_ADDRESS = "361 Hiawatha Way Melbourne Beach, Florida(FL), 32951"
+LA_ADDRESS = "400 La Fayette Park Pl, Los Angeles, CA 90057"
+
 SAMPLE_USER_PROFILE = {
     "household_name": "Smith", 
-    "address": "400 La Fayette Park Pl, Los Angeles, CA 90057",
+    "address": FLORIDA_ADDRESS,
     "family_members": [
         {
             "name": "John Smith",
