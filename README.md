@@ -56,3 +56,26 @@ This level of hyper-personalization and data integration is currently underrepre
 3. IoT Devices Integration
 4. Evacuation Routes
 
+
+## Setup
+
+This repository uses [UV](https://astral.sh/blog/uv) as its python dependency management tool. Install UV by:
+```bash
+curl -LsSf https://astral.sh/uv/install.sh | sh
+```
+
+Initialize virtual env and activate
+```bash
+uv venv
+source .venv/bin/activate
+```
+
+Install dependencies with:
+```bash
+uv sync
+```
+
+Run demo app with streamlit:
+```bash
+streamlit run app.py
+```
