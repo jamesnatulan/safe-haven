@@ -82,7 +82,6 @@ def get_flood_risk(openai_client, gmaps_client, address):
                 print(f"Request error while fetching forecast: {req_err}")
                 forecast_data = {"properties": {"forecast": "No forecast data available."}}
 
-        print(f"Forecast Data: {forecast_data}")
         location_info = f"Location: {lat}, {lon}"
         
         # Combine the prompt with the weather summary and location info

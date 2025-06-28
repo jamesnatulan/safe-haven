@@ -21,10 +21,10 @@ def get_earthquake_data(location, radius=100):
         dict: Earthquake data if successful, None otherwise.
     """
 
-    # Get the time range for the last 60 days
+    # Get the time range for the last 30 days
     from datetime import datetime, timedelta
     endtime = datetime.now()
-    starttime = endtime - timedelta(days=60)
+    starttime = endtime - timedelta(days=30)
 
     params = {
         'format': 'geojson',
