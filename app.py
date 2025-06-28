@@ -6,6 +6,7 @@ from weather import get_flood_risk
 from earthquake import get_earthquake_risk
 # from fire import get_fire_risk
 from preparedness import generate_preparation_checklist
+from defaults import SAMPLE_USER_PROFILE
 
 # Setup OpenAI API client
 openai_client = OpenAI(
@@ -71,6 +72,9 @@ def main():
                 "medication": medication
             })
 
+        if st.button("Use sample profile"):
+            # Load a sample user profile
+            st.session_state["user_profile"] = SAMPLE_USER_PROFILE.copy()
 
         # Show family members
         st.session_state["show_family_members"] = st.checkbox("Show Family Members", value=False)
@@ -90,6 +94,7 @@ def main():
     
     # Risk Dashboard
     st.subheader("Risk Dashboard")
+    st.write("Risk ratings are between 1 and 10, where 1 is low risk and 10 is high risk.")
 
     if st.button("Analyze Risk"):
         # Fetch and display risk data
@@ -105,8 +110,7 @@ def main():
             "rating": flood_risk_rating,
             "explanation": flood_risk_explanation
         }
-        st.write(f"Flood Risk Rating: {flood_risk_rating}")
-        st.write(f"Flood Risk Explanation: {flood_risk_explanation}")
+        print(f"Flood Risk: {st.session_state['user_profile']['flood_risk']}")
 
         earthquake_risk = get_earthquake_risk(
             openai_client,
@@ -120,8 +124,7 @@ def main():
                 "rating": earthquake_risk_rating,
                 "explanation": earthquake_risk_explanation
         }
-        st.write(f"Earthquake Risk Rating: {earthquake_risk_rating}")
-        st.write(f"Earthquake Risk Explanation: {earthquake_risk_explanation}")
+        print(f"Earthquake Risk: {st.session_state['user_profile']['earthquake_risk']}")
 
         # fire_risk = get_fire_risk(
         #     openai_client,
@@ -129,6 +132,16 @@ def main():
         #     st.session_state["user_profile"]["address"]
         # )
         # st.write(f"{fire_risk}")
+    
+    # Show risk dashboard
+    if st.session_state["user_profile"]["flood_risk"] or st.session_state["user_profile"]["earthquake_risk"]:
+        st.write("### Flood Risk")
+        st.write(f"Flood Risk Rating: {st.session_state['user_profile']['flood_risk']['rating']}")
+        st.write(f"Flood Risk Explanation: {st.session_state['user_profile']['flood_risk']['explanation']}")
+
+        st.write("### Earthquake Risk")
+        st.write(f"Earthquake Risk Rating: {st.session_state['user_profile']['earthquake_risk']['rating']}")
+        st.write(f"Earthquake Risk Explanation: {st.session_state['user_profile']['earthquake_risk']['explanation']}")
 
     # Generate Preparation Checklist
     st.subheader("Preparation Checklist")
@@ -138,7 +151,7 @@ def main():
             st.session_state["user_profile"]
         )
 
-        for task in checklist:
+        for task, weight in checklist.items():
             st.session_state["preparedness_checklist"][task] = False
 
     # Show preparedness checklist as list of checkboxes
@@ -146,8 +159,6 @@ def main():
         st.write("Preparedness Checklist:")
         for task, is_done in st.session_state["preparedness_checklist"].items():
             is_done = st.checkbox(task, value=is_done)
-
-    print("Hello from disaster-preparedness-assistant!")
 
 
 if __name__ == "__main__":
