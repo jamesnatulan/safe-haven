@@ -5,8 +5,9 @@ import googlemaps
 from weather import get_flood_risk
 from earthquake import get_earthquake_risk
 # from fire import get_fire_risk
-from preparedness import generate_preparation_checklist
+from preparedness import generate_preparation_checklist, calculate_preparedness_score
 from defaults import SAMPLE_USER_PROFILE
+from utils import get_color_preparedness_score, get_color_risk_level, colored_text
 
 # Setup OpenAI API client
 openai_client = OpenAI(
@@ -36,6 +37,9 @@ if "show_family_members" not in st.session_state:
 
 if "add_family_member" not in st.session_state:
     st.session_state["add_family_member"] = False
+
+if "preparedness_score" not in st.session_state:
+    st.session_state["preparedness_score"] = 0.0
 
 def main():
     # Sidebar
@@ -136,11 +140,21 @@ def main():
     # Show risk dashboard
     if st.session_state["user_profile"]["flood_risk"] or st.session_state["user_profile"]["earthquake_risk"]:
         st.write("### Flood Risk")
-        st.write(f"Flood Risk Rating: {st.session_state['user_profile']['flood_risk']['rating']}")
+        flood_risk_color = get_color_risk_level(int(st.session_state["user_profile"]["flood_risk"]["rating"]))
+        colored_flood_risk = colored_text(
+            f"{st.session_state['user_profile']['flood_risk']['rating']}",
+            flood_risk_color
+        )
+        st.markdown(f"Flood Risk Rating: {colored_flood_risk}", unsafe_allow_html=True)
         st.write(f"Flood Risk Explanation: {st.session_state['user_profile']['flood_risk']['explanation']}")
 
         st.write("### Earthquake Risk")
-        st.write(f"Earthquake Risk Rating: {st.session_state['user_profile']['earthquake_risk']['rating']}")
+        earthquake_risk_color = get_color_risk_level(int(st.session_state["user_profile"]["earthquake_risk"]["rating"]))
+        colored_earthquake_risk = colored_text(
+            f"{st.session_state['user_profile']['earthquake_risk']['rating']}",
+            earthquake_risk_color
+        )
+        st.markdown(f"Earthquake Risk Rating: {colored_earthquake_risk}", unsafe_allow_html=True)
         st.write(f"Earthquake Risk Explanation: {st.session_state['user_profile']['earthquake_risk']['explanation']}")
 
     # Generate Preparation Checklist
@@ -152,13 +166,30 @@ def main():
         )
 
         for task, weight in checklist.items():
-            st.session_state["preparedness_checklist"][task] = False
+            st.session_state["preparedness_checklist"][task] = {
+                "is_done": False,
+                "weight": weight
+            }
+
+    # Calculate and display preparedness score
 
     # Show preparedness checklist as list of checkboxes
     if st.session_state["preparedness_checklist"]:
         st.write("Preparedness Checklist:")
-        for task, is_done in st.session_state["preparedness_checklist"].items():
-            is_done = st.checkbox(task, value=is_done)
+        for task, data in st.session_state["preparedness_checklist"].items():
+            data["is_done"] = st.checkbox(task, value=data["is_done"])
+            st.session_state["preparedness_score"] = calculate_preparedness_score(
+                st.session_state["preparedness_checklist"]
+            )
+
+    # Every time the a task is checked, the score is recalculated
+    score_color = get_color_preparedness_score(st.session_state["preparedness_score"])
+    colored_score = colored_text(
+        f"{st.session_state['preparedness_score']}%",
+        score_color
+    )
+    st.markdown(f"Preparedness Sore: {colored_score}", unsafe_allow_html=True)
+    
 
 
 if __name__ == "__main__":

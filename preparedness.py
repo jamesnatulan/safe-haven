@@ -5,19 +5,24 @@ def calculate_preparedness_score(tasks):
     Calculate a preparedness score based on the tasks completed.
 
     Args:
-        tasks (list): A list of tasks, each task being a dictionary with 'task' and 'weight'.
+        tasks (dict): A dict of tasks, each task being a dictionary with 'is_done' and 'weight' fields.
     Returns:
         int: The total preparedness score.
     """
-    total_score = len(tasks) * 10  # Assuming each task can have a maximum weight of 10
-    current_score = 0
+    total_weight = 0
+    scored_weight = 0
 
-    for task in tasks:
-        if 'weight' in task:
-            current_score += task['weight']
+    for task, data in tasks.items():
+        total_weight += data["weight"]
+        if data["is_done"]:
+            scored_weight += data["weight"]
 
-    score_pct = (current_score / total_score) * 100
-    return score_pct
+    if total_weight == 0:
+        return 0.0
+    
+    score = (scored_weight / total_weight) * 100.0
+    score = round(score, 2)  # Round to 2 decimal places
+    return  score # Return score as a percentage rounded to 2 decimal places
 
 
 def generate_preparation_checklist(openai_client, user_profile):
