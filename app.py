@@ -4,7 +4,8 @@ import googlemaps
 
 from weather import get_flood_risk
 from earthquake import get_earthquake_risk
-from fire import get_fire_risk
+# from fire import get_fire_risk
+from preparedness import generate_preparation_checklist
 
 # Setup OpenAI API client
 openai_client = OpenAI(
@@ -21,9 +22,13 @@ if "user_profile" not in st.session_state:
         "household_name": "",
         "address": "",
         "family_members": [],
-        "risk_factors": [],
-        "preparedness_level": "",
+        "flood_risk": {},
+        "earthquake_risk": {},
     }
+
+if "preparedness_checklist" not in st.session_state:
+    st.session_state["preparedness_checklist"] = {}
+
 
 if "show_family_members" not in st.session_state:
     st.session_state["show_family_members"] = False
@@ -93,15 +98,30 @@ def main():
             gmaps_client,
             st.session_state["user_profile"]["address"]
         )
-    
-        st.write(f"{flood_risk}")
+        # Get flood risk number
+        flood_risk_rating = flood_risk.split("\n")[0].split(":")[1].strip()
+        flood_risk_explanation = flood_risk.split("\n")[1].split(":")[1].strip()
+        st.session_state["user_profile"]["flood_risk"] = {
+            "rating": flood_risk_rating,
+            "explanation": flood_risk_explanation
+        }
+        st.write(f"Flood Risk Rating: {flood_risk_rating}")
+        st.write(f"Flood Risk Explanation: {flood_risk_explanation}")
 
         earthquake_risk = get_earthquake_risk(
             openai_client,
             gmaps_client,
             st.session_state["user_profile"]["address"]
         )
-        st.write(f"{earthquake_risk}")
+        # Get earthquake risk number
+        earthquake_risk_rating = earthquake_risk.split("\n")[0].split(":")[1].strip()
+        earthquake_risk_explanation = earthquake_risk.split("\n")[1].split(":")[1].strip()
+        st.session_state["user_profile"]["earthquake_risk"] = {
+                "rating": earthquake_risk_rating,
+                "explanation": earthquake_risk_explanation
+        }
+        st.write(f"Earthquake Risk Rating: {earthquake_risk_rating}")
+        st.write(f"Earthquake Risk Explanation: {earthquake_risk_explanation}")
 
         # fire_risk = get_fire_risk(
         #     openai_client,
@@ -109,6 +129,23 @@ def main():
         #     st.session_state["user_profile"]["address"]
         # )
         # st.write(f"{fire_risk}")
+
+    # Generate Preparation Checklist
+    st.subheader("Preparation Checklist")
+    if st.button("Generate Checklist"):
+        checklist = generate_preparation_checklist(
+            openai_client,
+            st.session_state["user_profile"]
+        )
+
+        for task in checklist:
+            st.session_state["preparedness_checklist"][task] = False
+
+    # Show preparedness checklist as list of checkboxes
+    if st.session_state["preparedness_checklist"]:
+        st.write("Preparedness Checklist:")
+        for task, is_done in st.session_state["preparedness_checklist"].items():
+            is_done = st.checkbox(task, value=is_done)
 
     print("Hello from disaster-preparedness-assistant!")
 
