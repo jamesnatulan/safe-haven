@@ -3,7 +3,7 @@ LA_ADDRESS = "400 La Fayette Park Pl, Los Angeles, CA 90057"
 
 SAMPLE_USER_PROFILE = {
     "household_name": "Smith", 
-    "address": FLORIDA_ADDRESS,
+    "address": LA_ADDRESS,
     "family_members": [
         {
             "name": "John Smith",

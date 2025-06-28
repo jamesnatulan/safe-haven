@@ -51,7 +51,8 @@ This level of hyper-personalization and data integration is currently underrepre
 
 ## Future Improvements
 
-1. Realtime Alerts
-2. IoT Devices Integration
-3. Evacuation Routes
+1. Fire Risk Assessment
+2. Realtime Alerts
+3. IoT Devices Integration
+4. Evacuation Routes
 
