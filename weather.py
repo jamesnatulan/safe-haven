@@ -52,11 +52,13 @@ def get_flood_risk(openai_client, gmaps_client, address):
     Returns:
         str: A message indicating the flood risk level.
     """
-    prompt = """
+    system_prompt = """
     You are an expert in flood risk assessment. Provided the data below, determine
     the flood risk level. Please provide a number between 1 and 10 where 1 is low risk and 10 
     is high risk. Also, give a brief explanation of the factors that contribute to the
-    assessed risk level. Provide your response in the following format:
+    assessed risk level. Make sure to be realistic and do not exaggerate the risk level.
+    
+    Provide your response in the following format:
     Risk Level: <number> \n
     Explanation: <brief explanation> \n
     """
@@ -85,12 +87,15 @@ def get_flood_risk(openai_client, gmaps_client, address):
         location_info = f"Location: {lat}, {lon}"
         
         # Combine the prompt with the weather summary and location info
-        full_prompt = f"{prompt}\n\n{location_info}\n\nForecast Data: {forecast_data}"
+        user_prompt = f"{location_info}\n\nForecast Data: {forecast_data}"
 
         # Call the OpenAI model to get the flood risk assessment
         response = openai_client.chat.completions.create(
             model="gpt-3.5-turbo",
-            messages=[{"role": "user", "content": full_prompt}],
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": user_prompt}
+            ],
             max_tokens=500,
             temperature=0.7,
         )

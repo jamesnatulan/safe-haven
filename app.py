@@ -146,7 +146,7 @@ def main():
             flood_risk_color
         )
         st.markdown(f"Flood Risk Rating: {colored_flood_risk}", unsafe_allow_html=True)
-        st.write(f"Flood Risk Explanation: {st.session_state['user_profile']['flood_risk']['explanation']}")
+        st.write(f"{st.session_state['user_profile']['flood_risk']['explanation']}")
 
         st.write("### Earthquake Risk")
         earthquake_risk_color = get_color_risk_level(int(st.session_state["user_profile"]["earthquake_risk"]["rating"]))
@@ -155,7 +155,7 @@ def main():
             earthquake_risk_color
         )
         st.markdown(f"Earthquake Risk Rating: {colored_earthquake_risk}", unsafe_allow_html=True)
-        st.write(f"Earthquake Risk Explanation: {st.session_state['user_profile']['earthquake_risk']['explanation']}")
+        st.write(f"{st.session_state['user_profile']['earthquake_risk']['explanation']}")
 
     # Generate Preparation Checklist
     st.subheader("Preparation Checklist")
