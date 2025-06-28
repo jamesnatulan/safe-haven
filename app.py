@@ -3,6 +3,7 @@ from openai import OpenAI
 import googlemaps
 
 from weather import get_flood_risk
+from earthquake import get_earthquake_risk
 
 # Setup OpenAI API client
 openai_client = OpenAI(
@@ -85,14 +86,21 @@ def main():
     st.subheader("Risk Dashboard")
 
     if st.button("Analyze Risk"):
-        # Fetch and display risk data
-        flood_risk = get_flood_risk(
+        # # Fetch and display risk data
+        # flood_risk = get_flood_risk(
+        #     openai_client,
+        #     gmaps_client,
+        #     st.session_state["user_profile"]["address"]
+        # )
+    
+        # st.write(f"{flood_risk}")
+
+        earthquake_risk = get_earthquake_risk(
             openai_client,
             gmaps_client,
             st.session_state["user_profile"]["address"]
         )
-    
-        st.write(f"{flood_risk}")
+        st.write(f"{earthquake_risk}")
 
     print("Hello from disaster-preparedness-assistant!")
 

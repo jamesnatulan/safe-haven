@@ -2,7 +2,7 @@
 
 import requests
 from requests.exceptions import HTTPError, Timeout, RequestException
-import googlemaps
+from utils import get_lat_lon
 
 BASE_URL = "https://api.weather.gov"
 
@@ -39,25 +39,6 @@ def get_weather_data(user_agent, location):
         print(f"Request error: {req_err}")
     
     return None  # Return None if an error occurred
-
-
-def get_lat_lon(gmaps_client, address):
-    """
-    Returns the corresponding latitude and longitude for a given address.
-    Args:
-        gmaps_client (googlemaps.Client): The Google Maps client instance.
-        address (str): The address to geocode.
-    Returns:
-        tuple: A tuple containing the latitude and longitude of the address.
-    """
-    geocode_result = gmaps_client.geocode(address)
-
-    if geocode_result:
-        lat = geocode_result[0]['geometry']['location']['lat']
-        lon = geocode_result[0]['geometry']['location']['lng']
-        return (lat, lon)
-    else:
-        raise ValueError("Geocoding failed. Please check the address provided.")
     
 
 def get_flood_risk(openai_client, gmaps_client, address):
@@ -123,5 +104,9 @@ def get_flood_risk(openai_client, gmaps_client, address):
                 risk_level = response_content.split("Risk Level:")[1].split("\n")[0].strip()
                 explanation = response_content.split("Explanation:")[1].strip()
                 return f"Risk Level: {risk_level}\nExplanation: {explanation}"
-
-        return response.choices[0].message.content.strip()
+            
+            else:
+                return None
+            
+        else:
+            return None
