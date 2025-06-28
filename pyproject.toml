@@ -5,6 +5,7 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
+    "googlemaps>=4.10.0",
     "openai>=1.93.0",
     "streamlit>=1.46.1",
 ]

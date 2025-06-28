@@ -1,5 +1,18 @@
 import streamlit as st
+from openai import OpenAI
+import googlemaps
 
+from weather import get_flood_risk
+
+# Setup OpenAI API client
+openai_client = OpenAI(
+    api_key=st.secrets["OPENAI_API_KEY"],
+)
+
+# Setup Google Maps client
+gmaps_client = googlemaps.Client(
+    key=st.secrets["GOOGLE_MAPS_API_KEY"],
+)
 
 if "user_profile" not in st.session_state:
     st.session_state["user_profile"] = {
@@ -65,6 +78,21 @@ def main():
                 st.write("---")
 
 
+    # Main Content Area
+    st.title("Disaster Preparedness Assistant")
+    
+    # Risk Dashboard
+    st.subheader("Risk Dashboard")
+
+    if st.button("Analyze Risk"):
+        # Fetch and display risk data
+        flood_risk = get_flood_risk(
+            openai_client,
+            gmaps_client,
+            st.session_state["user_profile"]["address"]
+        )
+    
+        st.write(f"{flood_risk}")
 
     print("Hello from disaster-preparedness-assistant!")
 
